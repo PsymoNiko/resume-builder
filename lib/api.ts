@@ -74,7 +74,7 @@ export interface ResumeData {
   value_propositions: ValueProposition[]
 }
 
-// API client class
+// API client class with enhanced error handling
 class ApiClient {
   private baseUrl: string
   private timeout: number
@@ -86,6 +86,9 @@ class ApiClient {
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`
+
+    // Log the request for debugging
+    console.log(`Making API request to: ${url}`)
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.timeout)
@@ -103,16 +106,39 @@ class ApiClient {
       clearTimeout(timeoutId)
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const errorText = await response.text().catch(() => "Unknown error")
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
       }
 
-      return await response.json()
+      const data = await response.json()
+      console.log(`API response from ${endpoint}:`, data)
+      return data
     } catch (error) {
       clearTimeout(timeoutId)
-      if (error instanceof Error && error.name === "AbortError") {
-        throw new Error("Request timeout")
+
+      if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          throw new Error(`Request timeout after ${this.timeout}ms`)
+        }
+        if (error.message.includes("fetch")) {
+          throw new Error(
+            `Network error: Unable to connect to ${this.baseUrl}. Please check if the Django server is running.`,
+          )
+        }
+        throw error
       }
-      throw error
+
+      throw new Error("Unknown error occurred")
+    }
+  }
+
+  // Add a health check method
+  async healthCheck(): Promise<boolean> {
+    try {
+      await this.request("/api/health/", { method: "GET" })
+      return true
+    } catch {
+      return false
     }
   }
 
@@ -145,25 +171,31 @@ class ApiClient {
   }
 
   async getResumeData(): Promise<ResumeData> {
-    // Fetch all data in parallel
-    const [personal_info, experiences, skills, projects, education, languages, value_propositions] = await Promise.all([
-      this.getPersonalInfo(),
-      this.getExperiences(),
-      this.getSkills(),
-      this.getProjects(),
-      this.getEducation(),
-      this.getLanguages(),
-      this.getValuePropositions(),
-    ])
+    try {
+      // Try to fetch all data in parallel
+      const [personal_info, experiences, skills, projects, education, languages, value_propositions] =
+        await Promise.all([
+          this.getPersonalInfo(),
+          this.getExperiences(),
+          this.getSkills(),
+          this.getProjects(),
+          this.getEducation(),
+          this.getLanguages(),
+          this.getValuePropositions(),
+        ])
 
-    return {
-      personal_info,
-      experiences,
-      skills,
-      projects,
-      education,
-      languages,
-      value_propositions,
+      return {
+        personal_info,
+        experiences,
+        skills,
+        projects,
+        education,
+        languages,
+        value_propositions,
+      }
+    } catch (error) {
+      console.error("Error fetching resume data:", error)
+      throw error
     }
   }
 }

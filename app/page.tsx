@@ -10,15 +10,16 @@ import ValuePropositionSection from "@/components/value-proposition-section"
 import EducationSection from "@/components/education-section"
 import LoadingSpinner from "@/components/loading-spinner"
 import ErrorMessage from "@/components/error-message"
+import ApiStatusBanner from "@/components/api-status-banner"
 
 export default function ResumePage() {
-  const { data, loading, error, refetch } = useResumeData()
+  const { data, loading, error, isUsingFallback, refetch } = useResumeData()
 
   if (loading) {
     return <LoadingSpinner />
   }
 
-  if (error) {
+  if (!data && error && !isUsingFallback) {
     return <ErrorMessage message={error} onRetry={refetch} />
   }
 
@@ -31,6 +32,8 @@ export default function ResumePage() {
       <Navigation />
 
       <main className="container mx-auto px-6 py-12">
+        <ApiStatusBanner isUsingFallback={isUsingFallback} error={error} onRetry={refetch} />
+
         <HeroSection personalInfo={data.personal_info} />
         <ExperienceSection experiences={data.experiences} />
         <SkillsSection skills={data.skills} />
