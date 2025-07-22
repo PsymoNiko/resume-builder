@@ -11,6 +11,7 @@ import EducationSection from "@/components/education-section"
 import LoadingSpinner from "@/components/loading-spinner"
 import ErrorMessage from "@/components/error-message"
 import ApiStatusBanner from "@/components/api-status-banner"
+import AdditionalInfoSection from "@/components/additional-info-section"
 
 export default function ResumePage() {
   const { data, loading, error, isUsingFallback, refetch } = useResumeData()
@@ -40,6 +41,7 @@ export default function ResumePage() {
         <ProjectsSection projects={data.projects} />
         <ValuePropositionSection valuePropositions={data.value_propositions} />
         <EducationSection education={data.education} languages={data.languages} />
+        <AdditionalInfoSection />
       </main>
 
       <footer className="bg-gray-800 text-white mt-24 py-6">

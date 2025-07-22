@@ -9,7 +9,7 @@ export default function Navigation() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["experience", "skills", "projects", "value", "education"]
+      const sections = ["experience", "skills", "projects", "value", "education", "additional-info"]
       let current = ""
 
       sections.forEach((sectionId) => {
@@ -42,6 +42,7 @@ export default function Navigation() {
     { id: "skills", label: "Skills" },
     { id: "projects", label: "Projects" },
     { id: "value", label: "Value Proposition" },
+    { id: "additional-info", label: "Additional Info" },
   ]
 
   return (

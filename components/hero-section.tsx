@@ -11,7 +11,7 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
       <h1 className="text-4xl md:text-6xl font-bold text-[#2c3e50] mb-4">{personalInfo.name}</h1>
       <h2 className="text-2xl md:text-3xl text-[#4A90E2] font-semibold mb-6">{personalInfo.title}</h2>
       <p className="max-w-3xl mx-auto text-lg text-gray-600 mb-8">{personalInfo.description}</p>
-      <div className="flex justify-center space-x-6">
+      <div className="flex justify-center space-x-6 mb-6">
         {personalInfo.github_url && (
           <a
             href={personalInfo.github_url}
@@ -41,6 +41,11 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
           <Mail size={24} />
           <span>Email</span>
         </a>
+      </div>
+
+      <div className="text-center text-gray-600">
+        <p className="mb-2">📞 +989102001647</p>
+        <p>📍 Tehran, Iran</p>
       </div>
     </section>
   )
