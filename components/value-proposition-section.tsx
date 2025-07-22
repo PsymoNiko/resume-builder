@@ -1,21 +1,20 @@
 "use client"
 
 import { useState } from "react"
+import type { ValueProposition } from "@/lib/api"
 
-export default function ValuePropositionSection() {
-  const [selectedRole, setSelectedRole] = useState("lead")
+interface ValuePropositionSectionProps {
+  valuePropositions: ValueProposition[]
+}
 
-  const valuePropositions = {
-    lead: `As a <strong>Lead Engineer</strong>, I bring proven experience in spearheading backend development for large-scale systems. My work on the ride-hailing platform involved architecting for over 1M daily requests, mentoring a team of 10+ engineers, and leading the migration to a modern microservices stack. I excel at driving technical vision and ensuring high standards of code quality and system reliability.`,
-    cloud: `As a <strong>Cloud & DevOps Specialist</strong>, I have hands-on experience deploying and managing systems using Docker, Kubernetes, and AWS. I've successfully led migrations to microservices architectures, improving deployment frequency by 50%. My expertise in containerization, orchestration, and cloud infrastructure enables me to build scalable, resilient systems that can handle enterprise-level traffic and demands.`,
-    performance: `As a <strong>Performance & Scalability Expert</strong>, I have a track record of optimizing systems for high throughput and low latency. I've reduced API response times by 200ms through database query optimization and caching strategies, implemented asynchronous processing systems that increased throughput by 60%, and architected solutions that handle over 1M daily requests. My focus is on building systems that perform exceptionally under pressure.`,
+export default function ValuePropositionSection({ valuePropositions }: ValuePropositionSectionProps) {
+  const [selectedRole, setSelectedRole] = useState(valuePropositions[0]?.role_type || "")
+
+  const selectedProposition = valuePropositions.find((vp) => vp.role_type === selectedRole)
+
+  if (valuePropositions.length === 0) {
+    return null
   }
-
-  const roles = [
-    { key: "lead", label: "Lead Engineer" },
-    { key: "cloud", label: "Cloud & DevOps Specialist" },
-    { key: "performance", label: "Performance & Scalability Expert" },
-  ]
 
   return (
     <section id="value" className="mb-24 text-center">
@@ -26,27 +25,29 @@ export default function ValuePropositionSection() {
       </p>
 
       <div className="flex flex-wrap justify-center gap-4 mb-8">
-        {roles.map((role) => (
+        {valuePropositions.map((vp) => (
           <button
-            key={role.key}
-            onClick={() => setSelectedRole(role.key)}
+            key={vp.id}
+            onClick={() => setSelectedRole(vp.role_type)}
             className={`px-5 py-2 rounded-lg transition-all duration-300 ${
-              selectedRole === role.key
+              selectedRole === vp.role_type
                 ? "bg-[#4A90E2] text-white shadow-md"
                 : "bg-white text-[#4A90E2] border border-[#4A90E2] hover:bg-[#4A90E2] hover:text-white"
             }`}
           >
-            {role.label}
+            {vp.title}
           </button>
         ))}
       </div>
 
-      <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md text-left">
-        <p
-          className="text-gray-700 text-lg leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: valuePropositions[selectedRole as keyof typeof valuePropositions] }}
-        />
-      </div>
+      {selectedProposition && (
+        <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md text-left">
+          <p
+            className="text-gray-700 text-lg leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: selectedProposition.description }}
+          />
+        </div>
+      )}
     </section>
   )
 }
