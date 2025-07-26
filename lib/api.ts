@@ -202,7 +202,7 @@ class ApiClient {
 
 // Create API client instance
 const apiClient = new ApiClient({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://192.168.50.11:8000",
   timeout: 10000,
 })
 
